@@ -11,11 +11,11 @@ we propose a novel virtual try-on network named PL-VTON, where three sub-modules
 
 ## Notice
 Our method is an extension of our previous work on the conference version: (https://github.com/xyhanHIT/PL-VTON), and improvements made in this article include: 
-* In Progressive Clothing Warping, we adopt a new pre-alignment network to regress dynamic parameters of translation and scaling, which improves the robustness of parameter acquisition and avoids the negative impact of special human poses on the transformation parameters. 
-* Considering the fit of the person wearing clothing in real scenarios, we propose a novel gravity-aware loss to better handle the clothing edges and make the warped result more realistic. 
-* We introduce a non-limb target parsing map that contains the semantic information of the warped clothing in the middle process of Person Parsing Estimator, which serves as a geometric prior and assists in the smooth transition of predicting the target parsing map. 
-* We further optimize the clothing-agnostic person representation by the semantic correction according to the person’s parsing result to better retain the person’s other characteristics except for clothing and limbs in the try-on result. 
-* We conduct more qualitative and quantitative experiments. Specifically, we additionally introduce Structural Similarity (SSIM) and Peak Signal to Noise Ratio (PSNR) to further measure the quality of the generated try-on result. Then, we add three new ablation studies to evaluate each proposed contribution of our PL-VTON in more detail. Finally, additional try-on results of our method on the MPV, VITON-HD, and Dress Code datasets are further provided.
+* a new pre-alignment network to regress dynamic parameters of translation and scaling
+* a novel gravity-aware loss 
+* a non-limb target parsing map
+* the optimization of the clothing-agnostic person representation
+* more qualitative and quantitative experiment results
 
 ## Pipeline
 ![image](https://github.com/xyhanHIT/PL-VTONv2/blob/main/images/pipeline.png)
@@ -65,12 +65,5 @@ If you use our code or models, please cite with:
   booktitle={Proceedings of the 30th ACM International Conference on Multimedia},
   pages={2420--2429},
   year={2022}
-}
-@inproceedings{han2018viton,
-  title={VITON: An Image-Based Virtual Try-On Network},
-  author={Han, Xintong and Wu, Zuxuan and Wu, Zhe and Yu, Ruichi and Davis, Larry S},
-  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-  pages={7543--7552},
-  year={2018}
 }
 ```
