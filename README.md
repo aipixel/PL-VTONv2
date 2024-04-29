@@ -33,7 +33,7 @@ For the dataset, please refer to [VITON](https://github.com/xthan/VITON).
 You also need to download the data about hands from [here](https://drive.google.com/file/d/1VbzXS6vYumRoUaVp0PRXvB_1d54aqxM6/view?usp=drive_link).
 
 ## Inference
-1. Download the checkpoints from [here](https://drive.google.com/file/d/1kaVWi2zeeeJv5-xs9Ea8oWjzkzKdGeCH/view?usp=sharing).
+1. Download the checkpoints from [here](https://drive.google.com/file/d/1y98JcPR1TQ-qQCD7rwV8k11BRqBE4Jr-/view?usp=drive_link).
 
 2. Get [VITON dataset](https://github.com/xthan/VITON).
 
