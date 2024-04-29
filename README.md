@@ -21,11 +21,11 @@ Our method is an extension of our previous work on the conference version: https
 ![image](https://github.com/xyhanHIT/PL-VTONv2/blob/main/images/pipeline.png)
 
 ## Environment
-python 3.7
+python 3.8
 
-torch 1.9.0+cu111
+torch 2.0.1+cu118
 
-torchvision 0.10.0+cu111
+torchvision 0.15.2+cu118
 
 ## Dataset
 For the dataset, please refer to [VITON](https://github.com/xthan/VITON).
