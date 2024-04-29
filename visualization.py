@@ -61,7 +61,6 @@ def save_images(img_tensors, img_names, save_dir, type="no_parse"):
             Image.fromarray(array).save(os.path.join(save_dir, img_name), quality=95)
 
 def Parse_7_to_1(parse):
-    # 显示parse
     b, c, h, w = parse.shape
     parse_show = parse.cpu().detach().numpy()
     parse_show = parse_show.reshape(b, c, -1).transpose(0,2,1)

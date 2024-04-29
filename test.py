@@ -14,13 +14,13 @@ torch.manual_seed(0)
 
 def get_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", default="Test3")
+    parser.add_argument("--name", default="test")
     parser.add_argument('-j', '--workers', type=int, default=1)
     parser.add_argument('-b', '--batch-size', type=int, default=4)
     parser.add_argument("--dataroot", default="C:/Users/Admin/Desktop/viton_code/data/viton")
     parser.add_argument("--data_list", default="test_pairs.txt")
     parser.add_argument("--datamode", default="test")
-    parser.add_argument("--pair_setting", default="unpair", choices=['pair', 'unpair'])
+    parser.add_argument("--pair_setting", default="pair", choices=['pair', 'unpair'])
     parser.add_argument("--fine_width", type=int, default=192)
     parser.add_argument("--fine_height", type=int, default=256)
     parser.add_argument("--shuffle", type=bool, default=True, help='shuffle input data')
@@ -79,15 +79,9 @@ def train_network2(opt, train_loader, model_HPE, model_LTF):
     save_dir = os.path.join(opt.mid_data, opt.datamode, opt.pair_setting)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    coarse_try_on_dir = os.path.join(save_dir, 'coarse-try-on')
-    if not os.path.exists(coarse_try_on_dir):
-        os.makedirs(coarse_try_on_dir)
-    fine_try_on_dir = os.path.join(save_dir, 'fine-try-on')
-    if not os.path.exists(fine_try_on_dir):
-        os.makedirs(fine_try_on_dir)
-    parse_t_dir = os.path.join(save_dir, 'parse_t')
-    if not os.path.exists(parse_t_dir):
-        os.makedirs(parse_t_dir)
+    try_on_dir = os.path.join(save_dir, 'try-on')
+    if not os.path.exists(try_on_dir):
+        os.makedirs(try_on_dir)
 
     num_data = len(os.listdir(os.path.join(opt.dataroot, opt.datamode, "cloth")))
     step = (num_data // opt.batch_size) + 1
@@ -105,17 +99,15 @@ def train_network2(opt, train_loader, model_HPE, model_LTF):
         
         parse7_t = model_HPE(warp_cloth, pose_map18, parse7_occ, image_occ, mis_parse)
 
-        try_on_coarse, try_on_fine = model_LTF(limbs, warp_cloth, pose_map18, parse7_t, image_occ)
+        try_on = model_LTF(limbs, warp_cloth, pose_map18, parse7_t, image_occ)
 
-        save_images(Parse_7_to_1(parse7_t), im_name, parse_t_dir, type="parse")
-        save_images(try_on_coarse, im_name, coarse_try_on_dir)
-        save_images(try_on_fine, im_name, fine_try_on_dir)
+        save_images(try_on, im_name, try_on_dir)
 
 
 if __name__ == "__main__":
     opt = get_opt()
 
-    print("====================== 创建模型 ======================")
+    print("====================== create model ======================")
     model_STN = torch.nn.DataParallel(STNNet()).cuda()
     weight_STN = torch.load("./ckpt/STN.pth")
     model_STN.load_state_dict(weight_STN)
@@ -125,20 +117,20 @@ if __name__ == "__main__":
     model_MCW.load_state_dict(weight_MCW)
 
     model_HPE = torch.nn.DataParallel(HPENet()).cuda()
-    weight_HPE = torch.load("./ckpt/HPE.pth")
+    weight_HPE = torch.load("./ckpt/PPE.pth")
     model_HPE.load_state_dict(weight_HPE)
 
     model_LTF = torch.nn.DataParallel(LTFNet()).cuda()
     weight_LTF = torch.load("./ckpt/LTF.pth")
     model_LTF.load_state_dict(weight_LTF)
 
-    print("====================== 加载数据 ======================")
+    print("====================== load data ======================")
     # create dataset
     test_dataset = Dataset(opt)
     # create dataloader
     test_loader = DataLoader(opt, test_dataset)
-    print("数据加载完成，测试集大小:", test_dataset.__len__())
-    print("====================== 生成结果 ======================")
+    print("test_dataset:", test_dataset.__len__())
+    print("====================== predicting ======================")
     with torch.no_grad():
         train_network(opt, test_loader, model_STN, model_MCW)
 

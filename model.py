@@ -2,14 +2,12 @@ import torch
 import torch.nn as nn
 import torchvision
 import torch.nn.functional as F
-import numpy as np
-import matplotlib.pyplot as plt
 from GRU import ConvGRU
 
 class SE_Block(nn.Module):
     def __init__(self, ch_in, reduction=16):
         super(SE_Block, self).__init__()
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)				# 全局自适应池化
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
             nn.Linear(ch_in, ch_in // reduction, bias=False),
             nn.ReLU(inplace=True),
@@ -98,9 +96,6 @@ class STNNet(nn.Module):
 class FlowModel_GRU(nn.Module):
     def __init__(self, input_A_channels=31):
         super(FlowModel_GRU, self).__init__()
-        #------------#
-        # get a flow #
-        #------------#
         self.base_model = torchvision.models.resnet34(True)
         self.base_layers = list(self.base_model.children())
         self.encode1 = nn.Sequential(
@@ -153,7 +148,6 @@ class FlowModel_GRU(nn.Module):
         #------------#
         # get a flow #
         #------------#
-        # input = self.se0(input)
         e1 = self.encode1(input)     # [b,64,128,96]
         # e1 = self.se1(e1)
         e2 = self.encode2(e1)        # [b,64,64,48]
@@ -265,7 +259,6 @@ class ParseModel(nn.Module):
         parse = self.sigmoid(parse)   # [b,20,256,192]
         return parse
 
-# coarse去掉肢体部分（结果只保留肢体外的部分），因为mask遮挡了几乎全部的肢体信息，模型只能靠猜想 (我们没有设置判别器，会增加计算成本和模型大小)，没有所依据的辅助信息 / 或者loss不关注
 class TryOnModel(nn.Module):
     def __init__(self, input_channels=47):
         super(TryOnModel, self).__init__()
@@ -295,9 +288,6 @@ class TryOnModel(nn.Module):
 
     def forward(self, warp_cloth, pose_map18, parse7_t, img_preserve):
         input = torch.cat((warp_cloth, pose_map18, parse7_t, img_preserve), axis=1)    # [b, 3+18+20+3+3 (47), 256, 192]
-        #------------#
-        # get a flow #
-        #------------#
         e1 = self.encode1(input)     # [b,64,128,96]
         e2 = self.encode2(e1)        # [b,64,64,48]
         e3 = self.encode3(e2)        # [b,128,32,24]
@@ -336,7 +326,6 @@ class FeatureCorrelation(nn.Module):
         correlation_tensor = feature_mul.view(b,h,w,h*w).transpose(2,3).transpose(1,2)
         return correlation_tensor
 
-# 肢体信息融合的时候可以借鉴VITON的feature matching
 class LimbModel(nn.Module):
     def __init__(self, input_channels=28, limb_channels=192):
         super(LimbModel, self).__init__()
@@ -387,9 +376,6 @@ class LimbModel(nn.Module):
         limb_feature2 = self.limb_conv2(limb_feature1)    # [b, 512, 8, 6]
 
         input = torch.cat((try_on_coarse, pose_map18, parse7_t), axis=1)    # [b, 3+18+7 (28), 256, 192]
-        #------------#
-        # get a flow #
-        #------------#
         e1 = self.encode1(input)     # [b,64,128,96]
         e2 = self.encode2(e1)        # [b,64,64,48]
         e3 = self.encode3(e2)        # [b,128,32,24]
@@ -419,23 +405,9 @@ class Network(nn.Module):
         self.limb_model = LimbModel(input_channels=28, limb_channels=192)
       
     def forward(self, limb, warp_cloth, pose_map18, parse7_t, img_preserve):
-        tmp = self.try_on_model(warp_cloth, pose_map18, parse7_t, img_preserve)        # [b, 3+18+7+3, 256, 192]
+        tmp = self.try_on_model(warp_cloth, pose_map18, parse7_t, img_preserve)   # [b, 3+18+7+3, 256, 192]
         try_on = self.limb_model(limb, tmp, pose_map18, parse7_t)                 # [b, 3+18+7+3, 256, 192]
-        return tmp, try_on
-
-if __name__ == '__main__':
-    cloth = torch.from_numpy(np.zeros((2,3,256,192)).astype(np.float32)).cuda()
-    pose_map18 = torch.from_numpy(np.zeros((2,18,256,192)).astype(np.float32)).cuda()
-    parse7_occ = torch.from_numpy(np.zeros((2,7,256,192)).astype(np.float32)).cuda()
-    # image_occ = torch.from_numpy(np.zeros((2,3,256,192)).astype(np.float32)).cuda()
-
-    # model = PAModel().cuda()
-    # res = model(cloth, pose_map18, parse7_occ, image_occ)
-    # print("res:", res.shape)
-    # cloth = torch.from_numpy(np.zeros((1,28,256,192)).astype(np.float32)).cuda()
-    # img = torch.from_numpy(np.array(Image.open("1.jpg")).transpose(2,0,1)).unsqueeze(0).cuda()/255
-    model = STNNet2().cuda()
-    res = model(cloth, pose_map18, parse7_occ)
+        return try_on
 
 
 
