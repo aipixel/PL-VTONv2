@@ -6,7 +6,7 @@ Official code for TMM 2023 paper 'Limb-Aware Virtual Try-On Network With Progres
 
 We propose a novel virtual try-on network named PL-VTON, where three sub-modules are designed to generate high-quality try-on results, including Progressive Clothing Warping, Person Parsing Estimator, and Limb-aware Texture Fusion. On the one hand, PL-VTON explicitly models the location and size of the in-shop clothing and utilizes a two-stage alignment strategy to estimate the fine-grained clothing warping progressively. On the other hand, PL-VTON adopts limb-aware guidance to generate realistic limb details during the texture fusion between the warped clothing and the human body.
 
-[[Paper]](https://ieeexplore.ieee.org/abstract/document/10152500)
+[[Paper]](https://arxiv.org/abs/2503.14074)
 
 [[Checkpoints]](https://drive.google.com/file/d/18KvqkWWbjI_GHkqF5HZes0RNB233DHPG/view?usp=share_link)
 
